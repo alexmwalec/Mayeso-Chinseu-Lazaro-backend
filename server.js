@@ -6,19 +6,24 @@ const nodemailer = require("nodemailer");
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://mayeso-lazalo-academic-researcher.vercel.app",
+  })
+);
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
-
 app.post("/contact", async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
@@ -52,7 +57,7 @@ ${message}
 });
 
 app.get("/", (req, res) => {
-  res.send("Backend is running");
+  res.send("Backend is running!`");
 });
 
 app.listen(PORT, () => {
