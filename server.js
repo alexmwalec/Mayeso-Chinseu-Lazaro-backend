@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const  nodemailer = require('express');
+const { use } = require("react");
 
 
 const app = express();
@@ -13,39 +14,14 @@ app.use(
   })
 );
 app.use(express.json());
-const PORT = process.env.PORT || 5000;
 
-app.post("/contact", async (req, res) => {
-  try {
-    const { name, email, subject, message } = req.body;
-
-    await resend.emails.send({
-      from: "Contact Form <onboarding@resend.dev>",
-      to: process.env.OWNER_EMAIL,
-      subject: `Website Contact: ${subject}`,
-      reply_to: email,
-      html: `
-        <p><b>Name:</b> ${name}</p>
-        <p><b>Email:</b> ${email}</p>
-        <p><b>Subject:</b> ${subject}</p>
-        <p><b>Message:</b><br/>${message}</p>
-      `,
-    });
-
-    res.json({
-      success: true,
-      message: "Message sent successfully",
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to send message",
-    });
-  }
-});
+const transporter = nodemailer.createTransport({
+  service:'gmail',
+  auth: {
+  user:process.env.EMAIL_USER,
+  pass:process.env.EMAIL_PASS,
+  },
+})
 
 app.get("/", (req, res) => {
   res.send("Backend is okay");
