@@ -2,31 +2,90 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const  nodemailer = require('express');
-const { use } = require("react");
-
+const nodemailer = require("nodemailer");
 
 const app = express();
 
+const PORT = process.env.PORT || 5000;
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL
+    origin: process.env.CLIENT_URL,
   })
 );
+
 app.use(express.json());
 
+// Nodemailer transporter
 const transporter = nodemailer.createTransport({
-  service:'gmail',
+  service: "gmail",
   auth: {
-  user:process.env.EMAIL_USER,
-  pass:process.env.EMAIL_PASS,
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
-})
-
-app.get("/", (req, res) => {
-  res.send("Backend is okay");
 });
 
+// Health Check Route
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Backend is running!",
+  });
+});
+
+// Contact Form Route
+app.post("/contact", async (req, res) => {
+  try {
+    const { name, email, subject, message } = req.body;
+
+    if (!name || !email || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    await transporter.sendMail({
+      from: `"Website Contact Form" <${process.env.EMAIL_USER}>`,
+      to: process.env.OWNER_EMAIL,
+      replyTo: email,
+      subject: `Website Contact: ${subject}`,
+      text: `
+Name: ${name}
+Email: ${email}
+Subject: ${subject}
+
+Message:
+${message}
+      `,
+      html: `
+        <h2>New Contact Form Submission</h2>
+
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+
+        <h3>Message</h3>
+        <p>${message}</p>
+      `,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Message sent successfully!",
+    });
+  } catch (error) {
+    console.error("Email Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to send message",
+      error: error.message,
+    });
+  }
+});
+
+// Start Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
