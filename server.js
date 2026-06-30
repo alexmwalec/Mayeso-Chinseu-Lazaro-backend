@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin:'https://mayeso-lazalo-academic-researcher.vercel.app/',
+    origin:'https://mayeso-lazalo-academic-researcher.vercel.app',
   })
 );
 
