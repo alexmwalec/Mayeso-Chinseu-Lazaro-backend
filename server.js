@@ -2,20 +2,17 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const { Resend } = require("resend");
-const resend = new Resend(process.env.RESEND_API_KEY); 
+const  nodemailer = require('express');
+
 
 const app = express();
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
 
 app.use(
   cors({
     origin: process.env.CLIENT_URL
   })
 );
-
+app.use(express.json());
 const PORT = process.env.PORT || 5000;
 
 app.post("/contact", async (req, res) => {
