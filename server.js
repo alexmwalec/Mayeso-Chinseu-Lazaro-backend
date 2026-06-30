@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: "https://mayeso-lazalo-academic-researcher.vercel.app",
+    origin: process.env.CLIENT_URL
   })
 );
 
@@ -51,7 +51,7 @@ app.post("/contact", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Backend is running!");
+  res.send("Backend is okay");
 });
 
 app.listen(PORT, () => {
